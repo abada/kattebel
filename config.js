@@ -1,7 +1,7 @@
 exports.APPLICATION_ID = "SECRET";
 exports.REST_API_KEY = "SECRET";
 
-exports.SYNC_CODE_LIFETIME = 10;
+exports.SYNC_CODE_LIFETIME = 30;
 exports.SYNC_CODE_DELAY = 5;
 
 exports.ENTITIES = ['Note', 'Sync'];
@@ -33,4 +33,9 @@ exports.ERRORS = {
     ENTITY_NOT_FOUND: "unable to find the requested entity",
     INVALID_REQUEST: "invalid request. API does not exist",
     INVALID_CONTENT: "content is invalid"
+};
+
+exports.JOBS = {
+    SUCCESS: "useless syncs flushed",
+    ERROR: "error trying to flush syncs"
 };

@@ -7,7 +7,7 @@ var express = require('express'),
 
 /* --------- CONVENIENCY && SECURITY --------- */
 app.use(express.bodyParser());
-//app.use(require('cloud/functions/ensureAPIKeys'));
+app.use(require('cloud/functions/ensureAPIKeys'));
 
 /* --------- API ---------- */
 app.get('/note/new', middleware(require('cloud/functions/createNote')));
@@ -28,6 +28,9 @@ app.use(function (error, req, res, next) { res.status(+error.code).send(error.me
 
 /* ---------- HOOKS --------- */
 require('cloud/hooks/Note');
+
+/* ---------- JOBS --------- */
+require('cloud/jobs/flushSync');
 
 /* ------- YOLO ------- */
 app.listen();
