@@ -6,4 +6,5 @@ module.exports = function (context) {
         context[entity].entityName = entity;
         context[entity].keyId = entity.toLowerCase() + 'Id';
     });
+    require('cloud/lib/bringPureFunctional').into(context);
 };

@@ -1,4 +1,4 @@
-require('cloud/lib/bringPureFunctional').into(this);
+require('cloud/utils/configure')(this);
 const CONFIG = require('cloud/config');
 var utils = require('cloud/utils/core');
 

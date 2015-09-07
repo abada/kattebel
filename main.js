@@ -1,5 +1,4 @@
 /* --------- INITIALISATION -------- */
-require('cloud/utils/configure')(this);
 const CONFIG = require('cloud/config');
 
 var express = require('express'),
@@ -8,10 +7,11 @@ var express = require('express'),
 
 /* --------- CONVENIENCY && SECURITY --------- */
 app.use(express.bodyParser());
-app.use(require('cloud/functions/ensureAPIKeys'));
+//app.use(require('cloud/functions/ensureAPIKeys'));
 
 /* --------- API ---------- */
-
+app.get('/note/new', middleware(require('cloud/functions/createNote')));
+app.get('/note/:identifier', middleware(require('cloud/functions/getNote')));
 
 
 /* --------- HANDLE ERRORS -------- */

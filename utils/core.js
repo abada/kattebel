@@ -93,6 +93,19 @@ var getObjects = curry(2, function (model, filter) {
     })).rejectedMap(formatErrorResponse(model.entityName));
 });
 
+var getObject = curry(2, function (model, filter) {
+    return (new Task(function (reject, resolve) {
+        filter(new Parse.Query(model))
+            .first()
+            .then(function success(data) {
+                data ? resolve(data) : reject({
+                    code: CONFIG.CODES.ENTITY_NOT_FOUND,
+                    message: CONFIG.ERRORS.ENTITY_NOT_FOUND
+                });
+            }, reject);
+    })).rejectedMap(formatErrorResponse(model.entityName));
+});
+
 /** Parse.Object -> Parse.Query -> Parse.Query -> Task(String, Number)*/
 var countObjects = curry(2, function (model, filter) {
     return (new Task(function(reject, resolve) {
@@ -180,10 +193,24 @@ var compareKeys = curry(2, function(refKey, key) {
         });
 });
 
+var merge = function (dest, src) {
+    var merged = {};
+    Object.getOwnPropertyNames(dest).forEach(function (p) { merged[p] = dest[p]; });
+    Object.getOwnPropertyNames(src).forEach(function (p) { merged[p] = src[p]; });
+    return merged;
+};
+
+/** Object -> Object */
+var gatherParams = function (req) {
+    var merged = merge(merge(req.body, req.params), req.query);
+    delete merged.length;
+    return merged;
+};
+
 /** (Request -> Task(Error, Object)) -> (express.Request, express.response, express.next) -> Unit)  */
 var toMiddleware = function (apiFunction) {
     return function (req, res, next) {
-        apiFunction(req)
+        apiFunction(gatherParams(req))
             .rejectedMap(formatErrorResponse(null))
             .fork(next, compose(res.json.bind(res), toJSON));
     };
@@ -229,3 +256,4 @@ exports.regroup = regroup;
 exports.saveObject = saveObject;
 exports.toJSON = toJSON;
 exports.toMiddleware = toMiddleware;
+exports.getObject = getObject;
