@@ -3,9 +3,9 @@
 var exec = require('child_process').exec,
     path = require('path');
 
-const RELATIVE_DOC_DIR = path.join('backend', 'doc'),
-      RELATIVE_DEST_DIR = path.join('backend', 'public'),
-      TAG_REG = /backend/;
+const RELATIVE_DOC_DIR = path.join('doc'),
+      RELATIVE_DEST_DIR = path.join('public'),
+      TAG_REG = /\d\.\d\.\d/;
 
 function handleErr(err, params){
     console.log("\n\n\033[1;31m" + err + "\033[0m");
@@ -89,6 +89,12 @@ function getHEADCommit(params, done) {
 
 function importPreviousDoc(params, done, tag) {
     logAction("import previous doc files");
+
+    if (params.tags.length === 0) {
+        logResult("No previous version");
+        return done(params);
+    }
+
     var tag = tag || params.tags[0],
         src = path.join(path.relative(params.rootDir, params.tempDir), '___' + tag),
         dest = path.join(params.tempDir, tag);
