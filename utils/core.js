@@ -161,6 +161,20 @@ var saveObject = curry(3, function (model, params, includes) {
     })).rejectedMap(formatErrorResponse(model.entityName));
 });
 
+var updateObject = curry(3, function (params, includes, object) {
+    return (new Task(function (reject, resolve) {
+        object.save(params).then(function (instance) {
+            includes.length === 0 ?
+                resolve(instance) :
+                (new Parse.Query(object.className))
+                    .equalTo('objectId', instance.id)
+                    .include(includes)
+                    .first()
+                    .then(resolve, reject);
+        }, reject);
+    })).rejectedMap(formatErrorResponse(object.className));
+});
+
 /** Parse.model -> Parse.Query -> Parse.Query -> Task(Error, Boolean) */
 var objectExists = curry(2, function (model, filter) {
     return countObjects(model, filter)
@@ -276,3 +290,4 @@ exports.toMiddleware = toMiddleware;
 exports.getObject = getObject;
 exports.generateUuid = generateUuid;
 exports.objectExists = objectExists;
+exports.updateObject = updateObject;
