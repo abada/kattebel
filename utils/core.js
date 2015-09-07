@@ -68,22 +68,6 @@ var getProperty = curry(2, function (key, object) {
         });
 });
 
-/** M::Parse.Object => M -> String[] -> String -> Task(String, M) */
-var getObjectById = curry(3, function (model, includes, id) {
-    return (new Task(function(reject, resolve) {
-        (new Parse.Query(model))
-            .equalTo('objectId', id)
-            .include(includes)
-            .first()
-            .then(function success(data) {
-                data ? resolve(data) : reject({
-                    code: CONFIG.CODES.ENTITY_NOT_FOUND,
-                    message: CONFIG.ERRORS.ENTITY_NOT_FOUND
-                });
-            }, reject);
-    })).rejectedMap(formatErrorResponse(model.entityName));
-});
-
 /** M::Parse.Object => M -> Parse.Query -> Parse.Query -> Task(String, M[])*/
 var getObjects = curry(2, function (model, filter) {
     return (new Task(function(reject, resolve) {
@@ -93,6 +77,7 @@ var getObjects = curry(2, function (model, filter) {
     })).rejectedMap(formatErrorResponse(model.entityName));
 });
 
+/** M::Parse.Object => M -> String[] -> String -> Task(Error, M) */
 var getObject = curry(2, function (model, filter) {
     return (new Task(function (reject, resolve) {
         filter(new Parse.Query(model))
@@ -106,7 +91,15 @@ var getObject = curry(2, function (model, filter) {
     })).rejectedMap(formatErrorResponse(model.entityName));
 });
 
-/** Parse.Object -> Parse.Query -> Parse.Query -> Task(String, Number)*/
+/** M::Parse.Object => M -> String[] -> String -> Task(Error, M) */
+var getObjectById = curry(3, function (model, includes, id) {
+    var filterById = curry(3, function (id, includes, query) {
+        return query.equalTo('objectId', id).includes(includes);
+    });
+    return getObject(model, filterById(id, includes));
+});
+
+/** Parse.Object -> Parse.Query -> Parse.Query -> Task(Error, Number)*/
 var countObjects = curry(2, function (model, filter) {
     return (new Task(function(reject, resolve) {
         filter(new Parse.Query(model))
@@ -115,9 +108,7 @@ var countObjects = curry(2, function (model, filter) {
     })).rejectedMap(formatErrorResponse(model.entityName));
 });
 
-/**
- * M:Parse.Object => M -> Number -> Object -> Parse.Query -> Parse.Query -> Task[String, M[]]
- */
+/** M:Parse.Object => M -> Number -> Object -> Parse.Query -> Parse.Query -> Task[Error, M[]] */
 var getPage = curry(4, function (model, size, params, filter) {
     var page = Maybe.fromEither(getProperty('page', params));
 
@@ -146,21 +137,7 @@ var getPage = curry(4, function (model, size, params, filter) {
                 }));
 });
 
-/** M:Parse.Object => M -> Object -> String[] -> Task(String, M) */
-var saveObject = curry(3, function (model, params, includes) {
-    return (new Task(function (reject, resolve) {
-        (new model(params)).save().then(function (instance) {
-            includes.length === 0 ?
-                resolve(instance) :
-                (new Parse.Query(model))
-                    .equalTo('objectId', instance.id)
-                    .include(includes)
-                    .first()
-                    .then(resolve, reject);
-        }, reject);
-    })).rejectedMap(formatErrorResponse(model.entityName));
-});
-
+/** M:Parse.Object => Object -> String[] -> M -> Parse.Task(String, M) */
 var updateObject = curry(3, function (params, includes, object) {
     return (new Task(function (reject, resolve) {
         object.save(params).then(function (instance) {
@@ -173,6 +150,11 @@ var updateObject = curry(3, function (params, includes, object) {
                     .then(resolve, reject);
         }, reject);
     })).rejectedMap(formatErrorResponse(object.className));
+});
+
+/** M:Parse.Object => M -> Object -> String[] -> Task(String, M) */
+var saveObject = curry(3, function (model, params, includes) {
+    return updateObject(undefined, includes, new model(params));
 });
 
 /** Parse.model -> Parse.Query -> Parse.Query -> Task(Error, Boolean) */
