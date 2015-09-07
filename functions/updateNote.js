@@ -1,25 +1,21 @@
 require('cloud/utils/configure')(this);
 const CONFIG = require('cloud/config');
-var utils = require('cloud/utils/core');
-
-/** String -> Parse.Query -> Parse.Query */
-var filterByUuid = curry(2, function (uuid, query) {
-    return query.equalTo('uuid', uuid);
-});
+var core = require('cloud/utils/core'),
+    utils = require('cloud/utils/kattebel');
 
 /** Object -> Either(Error, Task(Error, Note) */
 var updateNote = function (params) {
-    var content = utils.getProperty('content', params),
-        uuid = utils.getProperty('uuid', params);
+    var content = core.getProperty('content', params),
+        uuid = core.getProperty('uuid', params);
 
     return content.isLeft ?
         content :
-        uuid.map(filterByUuid)
-            .map(utils.getObject(Note))
-            .map(chain(utils.updateObject({ content: content.get() }, [])));
+        uuid.map(utils.filterBy('uuid'))
+            .map(core.getObject(Note))
+            .map(chain(core.updateObject({ content: content.get() }, [])));
 };
 
 /** Object -> Task(Error, Note) */
 module.exports = compose(
-    utils.TaskFromEither,
+    core.TaskFromEither,
     updateNote);

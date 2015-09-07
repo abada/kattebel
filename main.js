@@ -16,7 +16,6 @@ app.get('/note/:uuid/sync', middleware(require('cloud/functions/requestSync')));
 app.put('/note/:uuid/update', middleware(require('cloud/functions/updateNote')));
 app.post('/note/:uuid/update', middleware(require('cloud/functions/updateNote')));
 
-
 /* --------- HANDLE ERRORS -------- */
 app.use(function(res, res, next) {
     next({

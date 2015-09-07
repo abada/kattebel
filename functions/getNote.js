@@ -3,6 +3,7 @@ const CONFIG = require('cloud/config');
 var core = require('cloud/utils/core'),
     utils = require('cloud/utils/kattebel');
 
+/** String -> Parse.Object -> Object */
 var get = curry(2, function extract(attr, parseObject) {
     return parseObject.get(attr);
 });

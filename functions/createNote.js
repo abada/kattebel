@@ -1,17 +1,14 @@
 require('cloud/utils/configure')(this);
 const CONFIG = require('cloud/config');
-var utils = require('cloud/utils/core');
+var core = require('cloud/utils/core'),
+    utils = require('cloud/utils/kattebel');
 
-var filterByUuid = curry(2, function (uuid, query) {
-    return query.equalTo('uuid', uuid);
-
-});
-
+/** Unit -> Task(Error, { uuid: String }) */
 var chooseUuid = function () {
     return (new Task(function findUniqueUuid(reject, resolve) {
-        var uuid = utils.generateUuid();
-        utils
-            .objectExists(Note, filterByUuid(uuid))
+        var uuid = core.generateUuid();
+        core
+            .objectExists(Note, utils.filterBy('uuid', uuid))
             .fork(reject, function (alreadyTaken) {
                 alreadyTaken ?
                     findUniqueUuid(reject, resolve) :
@@ -20,13 +17,10 @@ var chooseUuid = function () {
     }));
 };
 
+/** { uuid: String } -> Task(Error, { uuid: String }) */
 var createNote = function (params) {
-    return utils.saveObject(Note, params, [])
-        .map(function () { return params; });
+    return core.saveObject(Note, params, []).map(function () { return params; });
 };
 
-
 /** Object -> Task(Error, Note) */
-module.exports = compose(
-    chain(createNote),
-    chooseUuid);
+module.exports = compose(chain(createNote), chooseUuid);

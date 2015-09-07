@@ -3,6 +3,7 @@ const CONFIG = require('cloud/config');
 var core = require('cloud/utils/core'),
     utils = require('cloud/utils/kattebel');
 
+/** Note -> Task(Error, { syncCode: Number, note: Note } */
 var chooseSyncCode = function (note) {
     return (new Task(function findUniqueSyncCode(reject, resolve) {
         var code = Math.floor(Math.random() * 100000);
@@ -15,11 +16,13 @@ var chooseSyncCode = function (note) {
     }));
 };
 
+/** Number -> String */
 var withLeadingZero = function (code) {
     var str = "00000" + code;
     return str.substring(str.length - 5, str.length);
 };
 
+/** { syncCode: Number, note: Note } -> Task(Error, { expiresAt: Number, syncCode: Number} */
 var createSync = function (params) {
     params.expiresAt = Date.now() + (CONFIG.SYNC_CODE_DELAY + CONFIG.SYNC_CODE_LIFETIME) * 1000;
     return core.saveObject(Sync, params, []).map(function () { return {
@@ -36,4 +39,3 @@ module.exports = compose(
     map(core.getObject(Note)),
     map(utils.filterBy('uuid')),
     core.getProperty('uuid'));
-
