@@ -1,0 +1,152 @@
+#! /usr/bin/env node
+
+var exec = require('child_process').exec,
+    path = require('path');
+
+const RELATIVE_DOC_DIR = path.join('backend', 'doc'),
+      RELATIVE_DEST_DIR = path.join('backend', 'public'),
+      TAG_REG = /backend/;
+
+function handleErr(err, params){
+    console.log("\n\n\033[1;31m" + err + "\033[0m");
+    clean(params, process.exit.bind(null, 1));
+}
+
+function clean(params, done) {
+    if (params.HEADCommit) {
+        exec('git reset ' + params.HEADCommit, function () {
+            if (params.tempDir) {
+                exec('rm -r ' + params.tempDir);
+            }
+            done();
+        });
+    }
+}
+
+function logAction(action) {
+    action = action.substring(0,30);
+    while(action.length < 30) { action += " "; }
+    process.stdout.write("\033[1;34m" + action + " > \033[0m");
+}
+
+function logResult(result) {
+    process.stdout.write(result + "\n");
+}
+
+function getRootDir(params, done) {
+    logAction("get repository root");
+    exec('git rev-parse --show-toplevel', function (err, data) {
+        if (err) { return handleErr(err, params); };
+        params.rootDir = data.toString().match(/(\S+)/)[1];
+        logResult(params.rootDir);
+        done(params);
+    });
+}
+
+function getTags(params, done) {
+    logAction("get version tags");
+    exec('git tag', function (err, data) {
+        if (err) { return handleErr(err, params); };
+        params.tags = data.toString().split("\n").filter(function (d) {
+            return d.match(TAG_REG);
+        });
+        logResult(params.tags.join(", "))
+        done(params);
+    });
+}
+
+function moveToRoot(params, done) {
+    logAction("move to root directory");
+    process.chdir(params.rootDir);
+    logResult("now at " + params.rootDir);
+    done(params);
+}
+
+function createTemporaryDir(params, done) {
+    logAction("create temporary dir");
+    params.tempDir = path.join(process.cwd(), '_temp');
+    exec('rmdir -r ' + params.tempDir, function () {
+        exec('mkdir -p ' + params.tempDir, function (err, data) {
+            if (err) { return handleErr(err, params); };
+            logResult(params.tempDir);
+            done(params);
+        });
+    });
+}
+
+function getHEADCommit(params, done) {
+    logAction("get HEAD commit");
+    exec("git show-ref --head HEAD", function (err, data) {
+        if (err) { return handleErr(err, params); };
+        var reg = /([\w\d]+)\sHEAD/;
+        params.HEADCommit = data.split("\n").filter(function (d) {
+            return d.match(reg);
+        })[0].match(reg)[1];
+        logResult(params.HEADCommit);
+        done(params);
+    });
+}
+
+function importPreviousDoc(params, done, tag) {
+    logAction("import previous doc files");
+    var tag = tag || params.tags[0],
+        src = path.join(path.relative(params.rootDir, params.tempDir), '___' + tag),
+        dest = path.join(params.tempDir, tag);
+    exec("git subtree add -P " + src + " " + tag, function (err) {
+        if (err) { return handleErr(err, params); };
+        src = path.join(params.rootDir, src, RELATIVE_DOC_DIR);
+        exec("mkdir " + dest, function (err) {
+            exec("mv " + path.join(src, '*.js') + " " + dest, function (err) {
+                if (err) { return handleErr(err, params); };
+                exec('git commit --amend -aC HEAD', function (err) {
+                    if (err) { return handleErr(err, params); };
+                    logResult(tag + " imported");
+                    tag = params.tags[params.tags.indexOf(tag) + 1];
+                    tag ?
+                        importPreviousDoc(params, done, tag) :
+                        done(params);
+                });
+            });
+        });
+    });
+}
+
+function buildDoc(params, done) {
+    logAction("build documentation #finally");
+    var docDir = path.join(params.rootDir, RELATIVE_DOC_DIR);
+    process.chdir(docDir);
+    exec("cp *.js *.md *.json _temp/", function (err) {
+        if (err) { return handleErr(err, params); };
+        process.chdir(path.join(docDir, '_temp'));
+        exec("rm -r ___*.*.*", function (err) {
+            exec("apidoc -f .*\\.js -o " + path.join(params.rootDir, RELATIVE_DEST_DIR), function (err) {
+                if (err) { return handleErr(err, params); };
+                logResult("swagg");
+                done(params);
+            });
+        });
+    });
+}
+
+(function sequence(tasks) {
+    var taskNum = 0;
+    var done = function (params) {
+        execute(tasks[++taskNum], params);
+    };
+
+    var execute = function (task, params) {
+        if (!task) { return console.log("\033[1;30mDone.\033[0m"); }
+        task(params, done);
+    };
+
+    execute(tasks[0], {});
+}([
+    getHEADCommit,
+    getRootDir,
+    getTags,
+    createTemporaryDir,
+    moveToRoot,
+    importPreviousDoc,
+    buildDoc,
+    clean
+]));
