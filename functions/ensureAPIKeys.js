@@ -14,7 +14,7 @@ var ensureAPIKeys = compose(
     async.parallel,
     apply2(
         chain(extractAndCompare(CONFIG.APPLICATION_ID, 'x-parse-application-id')),
-        chain(extractAndCompare(CONFIG.REST_API_KEY, 'x-parse-rest-api-key'))),
+        chain(extractAndCompare(CONFIG.JAVASCRIPT_KEY, 'x-parse-javascript-key'))),
     utils.getProperty('headers'));
 
 module.exports = function (req, res, next) {

@@ -1,5 +1,5 @@
-exports.APPLICATION_ID = "SECRET";
-exports.REST_API_KEY = "SECRET";
+exports.APPLICATION_ID = Parse.applicationId;
+exports.JAVASCRIPT_KEY = Parse.javascriptKey;
 
 exports.SYNC_CODE_LIFETIME = 30;
 exports.SYNC_CODE_DELAY = 5;
