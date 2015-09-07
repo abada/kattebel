@@ -32,4 +32,5 @@ exports.ERRORS = {
     MISSING_API_KEY: "at least one api key is missing",
     ENTITY_NOT_FOUND: "unable to find the requested entity",
     INVALID_REQUEST: "invalid request. API does not exist",
+    INVALID_CONTENT: "content is invalid"
 };

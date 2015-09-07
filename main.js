@@ -25,7 +25,7 @@ app.use(function(res, res, next) {
 app.use(function (error, req, res, next) { res.status(+error.code).send(error.message); });
 
 /* ---------- HOOKS --------- */
-
+require('cloud/hooks/Note');
 
 /* ------- YOLO ------- */
 app.listen();
