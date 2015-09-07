@@ -161,6 +161,12 @@ var saveObject = curry(3, function (model, params, includes) {
     })).rejectedMap(formatErrorResponse(model.entityName));
 });
 
+/** Parse.model -> Parse.Query -> Parse.Query -> Task(Error, Boolean) */
+var objectExists = curry(2, function (model, filter) {
+    return countObjects(model, filter)
+        .map(function (nb) { return nb > 0; });
+});
+
 /** { model: Parse.Object, name: String }[] -> Object -> Task(String, Object) */
 var pickObjects = curry(2, function (describers, params) {
     return async.parallel(describers.map(function (param) {
@@ -216,6 +222,17 @@ var toMiddleware = function (apiFunction) {
     };
 };
 
+/** Unit -> String  */
+var generateUuid = function () {
+    function s4() {
+        return Math.floor((1 + Math.random()) * 0x10000)
+            .toString(16)
+            .substring(1);
+    }
+    return s4() + s4() + '-' + s4() + '-' + s4() + '-' +
+        s4() + '-' + s4() + s4() + s4();
+};
+
 /** a -> Boolean */
 var isObject = function (obj) {
     return typeof obj === 'function' || (typeof obj === 'object' && !!obj);
@@ -257,3 +274,5 @@ exports.saveObject = saveObject;
 exports.toJSON = toJSON;
 exports.toMiddleware = toMiddleware;
 exports.getObject = getObject;
+exports.generateUuid = generateUuid;
+exports.objectExists = objectExists;
