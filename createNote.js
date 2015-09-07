@@ -2,7 +2,7 @@
  * @api {get} /note/new Request a new uuid
  * @apiName createNote
  * @apiGroup Note
- * @apiVersion 0.1.1
+ * @apiVersion 0.2.0
  * @apiDescription Use this endpoint to create a new empty note in the server. As a response, the
  * server will gives you a cooresponding uuid in a serialized JSON response.
  *

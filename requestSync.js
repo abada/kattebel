@@ -2,7 +2,7 @@
  * @api {get} /note/:uuid/sync Request a new sync session
  * @apiName requestSync
  * @apiGroup Note
- * @apiVersion 0.1.1
+ * @apiVersion 0.2.0
  * @apiDescription Use this to create a new synchronisation session. This means that for a short
  * delay, the `syncCode` gave by the server might be used as a direct reference to the note.
  *

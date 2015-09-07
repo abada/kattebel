@@ -2,7 +2,7 @@
  * @api {put} /note/:uuid/update Update a note
  * @apiName updateNote
  * @apiGroup Note
- * @apiVersion 0.1.1
+ * @apiVersion 0.2.0
  * @apiDescription Update the note's content in the server-side. The server will respond with the
  * note as it has been saved, but not necessarily the last version of the note (if several updates
  * are made in the same interval of time).
