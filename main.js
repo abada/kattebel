@@ -12,6 +12,7 @@ app.use(express.bodyParser());
 /* --------- API ---------- */
 app.get('/note/new', middleware(require('cloud/functions/createNote')));
 app.get('/note/:identifier', middleware(require('cloud/functions/getNote')));
+app.get('/note/:uuid/sync', middleware(require('cloud/functions/requestSync')));
 app.put('/note/:uuid/update', middleware(require('cloud/functions/updateNote')));
 app.post('/note/:uuid/update', middleware(require('cloud/functions/updateNote')));
 
