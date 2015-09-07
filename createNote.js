@@ -2,7 +2,7 @@
  * @api {get} /note/new Request a new uuid
  * @apiName createNote
  * @apiGroup Note
- * @apiVersion 0.1.0
+ * @apiVersion 0.1.1
  * @apiDescription Use this endpoint to create a new empty note in the server. As a response, the
  * server will gives you a cooresponding uuid in a serialized JSON response.
  *
@@ -15,6 +15,7 @@
  *      }
  *
  * @apiError (5xx) 500 Internal error, something unexpected went wrong with the server
+ * @apiError (5xx) 554 Invalid API key, at least one api key is missing or is invalid
  *
  * @apiErrorExample Error-Response:
  *     HTTP/1.1 500

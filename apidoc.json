@@ -1,6 +1,6 @@
 {
     "name": "Kattebel",
-    "version": "0.1.0",
+    "version": "0.1.1",
     "description": "Summary of backend feature of our lovely notes app.",
     "header": {
         "title": "Kattebel API",

@@ -2,7 +2,7 @@
  * @api {get} /note/:uuid/sync Request a new sync session
  * @apiName requestSync
  * @apiGroup Note
- * @apiVersion 0.1.0
+ * @apiVersion 0.1.1
  * @apiDescription Use this to create a new synchronisation session. This means that for a short
  * delay, the `syncCode` gave by the server might be used as a direct reference to the note.
  *
@@ -18,7 +18,8 @@
  *      }
  *
  * @apiError (5xx) 500 Internal error, something unexpected went wrong with the server
- * @apiError (5xx) 501 Unknown note, the given note does not exist
+ * @apiError (5xx) 550 Unknown note, the given note does not exist or the code has expired
+ * @apiError (5xx) 554 Invalid API key, at least one api key is missing or is invalid
  *
  * @apiErrorExample Error-Response:
  *     HTTP/1.1 500

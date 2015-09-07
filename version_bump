@@ -1,0 +1,29 @@
+#################################################
+# READ @apiVersion from apidoc.json and update
+# all the other documentation files accordingly
+#################################################
+if [ $# -ne 2 ]; then
+    echo "Illegal number of parameters."
+    echo "Usage: ./script.sh path/to/documentation/ path/to/apidoc.json"
+    exit
+fi
+
+if [ ! -d $1 ]; then
+    echo "The directory doesn't exist."
+    exit
+fi
+
+if [ ! -f $2 ]; then
+    echo "apidoc.json not found."
+    exit
+fi
+
+number=$(grep '"version"' $2 |cut -d "\"" -f4)
+
+if [ "$(uname)" = "Darwin" ]; # MacOS
+then
+    find $1 -type f -iname "*.js" -exec sed -i "" "s/.*@apiVersion.*/ \* @apiVersion $number/g" {} \;
+else # Linux
+    find $1 -type f -iname "*.js" -exec sed -i "s/.*@apiVersion.*/ \* @apiVersion $number/g" {} \;
+fi
+echo "@apiVersion updated in all documentation files (set to $number)."
