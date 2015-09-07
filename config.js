@@ -1,7 +1,7 @@
 exports.APPLICATION_ID = "SECRET";
 exports.REST_API_KEY = "SECRET";
 
-exports.SYNC_CODE_LIFETIME = 30;
+exports.SYNC_CODE_LIFETIME = 90;
 exports.SYNC_CODE_DELAY = 5;
 
 exports.ENTITIES = ['Note', 'Sync'];

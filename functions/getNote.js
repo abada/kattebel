@@ -5,9 +5,13 @@ var utils = require('cloud/utils/core');
 
 /** String -> String -> String -> Parse.query -> Parse.query */
 var filterBy = curry(4, function filterBy(column, value, includes, query) {
-    return query
+    var q = query
         .equalTo(column, value)
         .include(includes);
+
+    return column === 'uuid' ?
+        q :
+        q.greaterThan('expiresAt', Date.now());
 });
 
 var get = curry(2, function extract(attr, parseObject) {
