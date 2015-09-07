@@ -3,10 +3,13 @@
  * @apiName getNote
  * @apiGroup Note
  * @apiVersion 0.1.0
+ * @apiDescription Retrieve a note from the backend. To do such a thing, you can supply either a
+ * valid `uuid` or a `5-digit code`. The server will answer with the given note if found, in a nice
+ * serialized JSON format.
  *
  * @apiParam {string} identifier The given note's uuid or corresponding digit code
  *
- * @apiSuccess {string} result The return the note as a serialized JSON format.
+ * @apiSuccess {string} result The return The requested note.
  *
  * @apiSuccessExample Success-Response:
  *     HTTP/1.1 200 OK

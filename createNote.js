@@ -3,9 +3,10 @@
  * @apiName createNote
  * @apiGroup Note
  * @apiVersion 0.1.0
- * @apiDescription Test
+ * @apiDescription Use this endpoint to create a new empty note in the server. As a response, the
+ * server will gives you a cooresponding uuid in a serialized JSON response.
  *
- * @apiSuccess {string} result The uuid in a JSON format response.
+ * @apiSuccess {string} result The created note's uuid.
  *
  * @apiSuccessExample Success-Response:
  *     HTTP/1.1 200 OK

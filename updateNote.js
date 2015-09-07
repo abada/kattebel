@@ -3,11 +3,14 @@
  * @apiName updateNote
  * @apiGroup Note
  * @apiVersion 0.1.0
+ * @apiDescription Update the note's content in the server-side. The server will respond with the
+ * note as it has been saved, but not necessarily the last version of the note (if several updates
+ * are made in the same interval of time).
  *
  * @apiParam {string} uuid The given note's uuid
  * @apiParam {string} content The new note's content
  *
- * @apiSuccess {string} result The return the note as it has been saved as a serialized JSON format.
+ * @apiSuccess {string} result The return the note as it has been saved.
  *
  * @apiSuccessExample Success-Response:
  *     HTTP/1.1 200 OK

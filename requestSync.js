@@ -3,11 +3,12 @@
  * @apiName requestSync
  * @apiGroup Note
  * @apiVersion 0.1.0
+ * @apiDescription Use this to create a new synchronisation session. This means that for a short
+ * delay, the `syncCode` gave by the server might be used as a direct reference to the note.
  *
  * @apiParam {string} uuid The given note's uuid
  *
- * @apiSuccess {string} result The digit code bound to the note and end date for the session in a
- * serialized JSON format.
+ * @apiSuccess {string} result The digit code bound to the note and end date for the session.
  *
  * @apiSuccessExample Success-Response:
  *     HTTP/1.1 200 OK
