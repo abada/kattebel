@@ -1,5 +1,5 @@
 exports.APPLICATION_ID = Parse.applicationId;
-exports.JAVASCRIPT_KEY = Parse.javascriptKey;
+exports.JAVASCRIPT_KEY = Parse.javaScriptKey;
 
 exports.SYNC_CODE_LIFETIME = 30;
 exports.SYNC_CODE_DELAY = 5;
